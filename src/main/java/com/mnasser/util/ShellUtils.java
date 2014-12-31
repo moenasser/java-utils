@@ -1,37 +1,3 @@
-/**
- * Copyright (c) 2009, Proclivity Systems or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors. All rights reserved.
- * http://www.proclivitysystems.com
- *
- * This copyrighted material is proprietary and confidential information and distribution
- * without a license is prohibited.
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
- *
- * 3. Redistributions of any form whatsoever must retain the following
- * acknowledgment:
- * "This product includes software developed by the Proclivity Systems
- * and contains proprietary and confidential information."
- *
- * THIS SOFTWARE IS PROVIDED BY THE PROCLIVITY SYSTEMS "AS IS" AND ANY
- * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE PROCLIVITY SYSTEMS OR
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.mnasser.util;
 
 import java.io.BufferedReader;
@@ -46,13 +12,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
-
-public class Utils {
+/**
+ * Exposes the <code>shellOut</code> utilities allowing us
+ * to create other sub processes on the system. 
+ * 
+ * This allows for a means of checking the std out, std err
+ * and if there was a return status other than 0.
+ * @author Moe
+ *
+ */
+public class ShellUtils {
 
 	public static final long PID;
 	public static final String HOSTNAME;
+
+	public static final Logger log = LoggerFactory.getLogger(ShellUtils.class);
 	
 	static {
 		String[] pidHost = 
@@ -66,16 +43,15 @@ public class Utils {
         return System.currentTimeMillis() + rand;
     }
 
-    public static void runProcess(Log log, String... args) {
+    public static void runProcess(Logger log, String... args) {
         runProcess(log, null, null, args);
     }
 
-    public static void runProcess(Log log, File workDir, String... args) {
+    public static void runProcess(Logger log, File workDir, String... args) {
         runProcess(log, workDir, null, args);
     }
 	
-
-    public static void runProcess(Log log, File workDir, Map<String, String> envMap, String... args) {
+    public static void runProcess(Logger log, File workDir, Map<String, String> envMap, String... args) {
         try {
             ProcessBuilder pb = new ProcessBuilder(args);
             pb.redirectErrorStream(true);   // merge stdout/stderr to one stream
@@ -104,7 +80,7 @@ public class Utils {
     }
 
     
-    public static void runProcessThrowableAsync(final Log log,final String... args) {  
+    public static void runProcessThrowableAsync(final Logger log,final String... args) {  
     	new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -113,7 +89,7 @@ public class Utils {
 		}).start();
     }
     
-    public static Process runProcessThrowable(Log log, String... args) {
+    public static Process runProcessThrowable(Logger log, String... args) {
     	
         try {
             ProcessBuilder pb = new ProcessBuilder(args);
@@ -193,7 +169,7 @@ public class Utils {
     public static List<String> shellOut(String arg) {
     	return shellOut(null, arg);
     }
-    public static List<String> shellOut(Log log, String arg) {
+    public static List<String> shellOut(Logger log, String arg) {
         try {
         	
             ProcessBuilder pb = new ProcessBuilder("sh","-c",arg);
